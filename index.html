@@ -1,9 +1,18 @@
-
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מעקב הוצאות</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-.app { font-family: var(--font-sans); direction: rtl; padding: 1rem 0; background: #0f1117; border-radius: 16px; padding: 1.5rem; min-height: 400px; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; direction: rtl; background: #0f1117; color: #e2e8f0; min-height: 100vh; }
+.app { max-width: 800px; margin: 0 auto; padding: 1.5rem 1rem; }
+.header { margin-bottom: 1.5rem; }
+.header h1 { font-size: 20px; font-weight: 500; color: #e2e8f0; }
+.header p { font-size: 13px; color: #6b7280; margin-top: 4px; }
 .tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; background: #1a1d27; border-radius: 10px; padding: 4px; }
-.tab { flex: 1; padding: 8px 12px; border-radius: 8px; border: none; background: transparent; color: #6b7280; cursor: pointer; font-size: 13px; font-family: var(--font-sans); transition: all 0.15s; }
+.tab { flex: 1; padding: 8px 12px; border-radius: 8px; border: none; background: transparent; color: #6b7280; cursor: pointer; font-size: 13px; font-family: inherit; transition: all 0.15s; }
 .tab.active { background: #252836; color: #e2e8f0; font-weight: 500; }
 .section { display: none; }
 .section.active { display: block; }
@@ -14,11 +23,14 @@
 .card-sub { font-size: 12px; margin-top: 4px; }
 .section-title { font-size: 12px; font-weight: 500; color: #6b7280; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
 .table-wrap { background: #1a1d27; border-radius: 12px; overflow: hidden; margin-bottom: 1.5rem; border: 0.5px solid #2d3148; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
 th { background: #13151f; color: #6b7280; font-weight: 500; font-size: 11px; padding: 10px 14px; text-align: right; border-bottom: 0.5px solid #2d3148; text-transform: uppercase; letter-spacing: 0.5px; }
 td { padding: 10px 14px; border-bottom: 0.5px solid #1e2130; color: #c9d1e0; text-align: right; }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: #1e2235; }
+.action-btn { background: none; border: none; color: #4b5563; cursor: pointer; font-size: 13px; padding: 2px 6px; border-radius: 4px; }
+.action-btn:hover { color: #e2e8f0; background: #2d3148; }
+.action-btn.del:hover { color: #f87171; }
 .cat-row { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-bottom: 0.5px solid #1e2130; cursor: pointer; transition: background 0.1s; }
 .cat-row:last-child { border-bottom: none; }
 .cat-row:hover { background: #1e2235; }
@@ -28,34 +40,53 @@ tr:hover td { background: #1e2235; }
 .cat-amounts { font-size: 13px; color: #6b7280; }
 .cat-amounts span { font-weight: 500; color: #c9d1e0; }
 .progress-track { height: 4px; background: #252836; border-radius: 2px; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+.progress-fill { height: 100%; border-radius: 2px; }
 .cat-detail { display: none; background: #13151f; border-top: 0.5px solid #1e2130; }
-.cat-detail table { font-size: 12px; }
+.cat-detail table { font-size: 13px; }
 .cat-detail td { padding: 8px 14px; color: #9ca3af; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1rem; }
 .form-field { display: flex; flex-direction: column; gap: 6px; }
 .form-field label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
-.form-field input, .form-field select { padding: 9px 12px; border: 0.5px solid #2d3148; border-radius: 8px; background: #1a1d27; color: #e2e8f0; font-size: 14px; font-family: var(--font-sans); }
+.form-field input, .form-field select { padding: 9px 12px; border: 0.5px solid #2d3148; border-radius: 8px; background: #1a1d27; color: #e2e8f0; font-size: 14px; font-family: inherit; }
 .form-field input::placeholder { color: #4b5563; }
 .form-field input:focus, .form-field select:focus { outline: none; border-color: #4f6ef7; }
-.btn { width: 100%; padding: 11px; background: #4f6ef7; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; color: #fff; cursor: pointer; margin-top: 4px; font-family: var(--font-sans); }
+.btn { width: 100%; padding: 11px; background: #4f6ef7; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; color: #fff; cursor: pointer; font-family: inherit; }
 .btn:hover { background: #3d5ce8; }
+.btn-danger { background: #1a1d27; border: 0.5px solid #f87171; color: #f87171; margin-top: 8px; }
+.btn-danger:hover { background: #2d1a1a; }
 .card-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; margin-bottom: 1.5rem; }
-.card-btn { padding: 8px 6px; border-radius: 8px; border: 0.5px solid #2d3148; background: #1a1d27; color: #6b7280; cursor: pointer; font-size: 11px; text-align: center; line-height: 1.5; font-family: var(--font-sans); }
-.card-btn small { color: #4b5563; }
+.card-btn { padding: 8px 6px; border-radius: 8px; border: 0.5px solid #2d3148; background: #1a1d27; color: #6b7280; cursor: pointer; font-size: 11px; text-align: center; line-height: 1.5; font-family: inherit; }
+.card-btn small { color: #4b5563; display: block; }
 .card-btn.active { border-color: #4f6ef7; background: #1e2442; color: #a5b4fc; font-weight: 500; }
-.card-btn.active small { color: #6b7fa8; }
 .opening-box { background: #1a1d27; border: 0.5px solid #2d3148; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 12px; }
 .opening-label { font-size: 12px; color: #6b7280; flex-shrink: 0; text-transform: uppercase; letter-spacing: 0.5px; }
-.opening-input { flex: 1; padding: 8px 12px; border: 0.5px solid #2d3148; border-radius: 8px; background: #13151f; color: #e2e8f0; font-size: 14px; font-family: var(--font-sans); }
+.opening-input { flex: 1; padding: 8px 12px; border: 0.5px solid #2d3148; border-radius: 8px; background: #13151f; color: #e2e8f0; font-size: 14px; font-family: inherit; }
 .opening-input:focus { outline: none; border-color: #4f6ef7; }
 .opening-hint { font-size: 12px; flex-shrink: 0; font-weight: 500; }
 .empty-state { padding: 24px; text-align: center; font-size: 13px; color: #4b5563; }
-.amount-positive { color: #34d399; }
-.amount-negative { color: #f87171; }
+.loading { text-align: center; padding: 2rem; color: #6b7280; font-size: 14px; }
+.edit-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; }
+.edit-modal.open { display: flex; }
+.edit-box { background: #1a1d27; border-radius: 16px; padding: 1.5rem; width: 90%; max-width: 500px; border: 0.5px solid #2d3148; }
+.edit-box h3 { font-size: 16px; font-weight: 500; margin-bottom: 1rem; color: #e2e8f0; }
+.modal-btns { display: flex; gap: 8px; margin-top: 1rem; }
+.modal-btns .btn { margin-top: 0; }
+.btn-cancel { background: #252836; color: #9ca3af; }
+.btn-cancel:hover { background: #2d3148; }
+.status-bar { background: #1a1d27; border: 0.5px solid #2d3148; border-radius: 8px; padding: 8px 14px; margin-bottom: 1rem; font-size: 13px; color: #6b7280; text-align: center; }
+.status-bar.error { border-color: #f87171; color: #f87171; }
+.status-bar.success { border-color: #34d399; color: #34d399; }
 </style>
-
+</head>
+<body>
 <div class="app">
+  <div class="header">
+    <h1>מעקב הוצאות</h1>
+    <p id="status-text">מתחבר לבסיס נתונים...</p>
+  </div>
+
+  <div id="status-bar" class="status-bar" style="display:none;"></div>
+
   <div class="tabs">
     <button class="tab active" onclick="switchTab('summary')">סיכום</button>
     <button class="tab" onclick="switchTab('entry')">הכנסת הוצאה</button>
@@ -64,13 +95,13 @@ tr:hover td { background: #1e2235; }
 
   <div id="summary" class="section active">
     <div class="opening-box">
-      <div class="opening-label">פתיחת חודש</div>
-      <input class="opening-input" type="number" id="opening-val" value="0" placeholder="מינוס = חוסר  |  פלוס = עודף" oninput="calcTotal()">
+      <div class="opening-label">פתיחת חודש (₪)</div>
+      <input class="opening-input" type="number" id="opening-val" value="0" placeholder="מינוס = חוסר | פלוס = עודף" oninput="calcTotal()">
       <div class="opening-hint" id="opening-hint" style="color:#6b7280;">ללא יתרה</div>
     </div>
     <div class="summary-cards">
       <div class="card">
-        <div class="card-label">סה"כ הוצאות אפריל</div>
+        <div class="card-label">סה"כ הוצאות</div>
         <div class="card-value" id="total-actual">₪0</div>
         <div class="card-sub" id="total-sub"></div>
       </div>
@@ -81,7 +112,8 @@ tr:hover td { background: #1e2235; }
       </div>
     </div>
     <div class="section-title">פילוח לפי קטגוריה — לחץ לפירוט</div>
-    <div class="table-wrap"><div id="cat-list"></div></div>
+    <div class="table-wrap"><div id="cat-list"><div class="loading">טוען נתונים...</div></div></div>
+    <button class="btn btn-danger" onclick="confirmNewMonth()">חודש חדש — נקה הוצאות משתנות</button>
   </div>
 
   <div id="entry" class="section">
@@ -112,13 +144,13 @@ tr:hover td { background: #1e2235; }
   <div id="cards" class="section">
     <div class="section-title" style="margin-bottom:10px;">בחר כרטיס</div>
     <div class="card-selector">
-      <div class="card-btn active" onclick="selectCard(this,'פייבוקס אור (2519)')">פייבוקס אור<br><small>2519</small></div>
-      <div class="card-btn" onclick="selectCard(this,'כאל פרו (4160)')">כאל פרו<br><small>4160</small></div>
-      <div class="card-btn" onclick="selectCard(this,'פייבוקס שיר (7838)')">פייבוקס שיר<br><small>7838</small></div>
-      <div class="card-btn" onclick="selectCard(this,'פרו שיר (5072)')">פרו שיר<br><small>5072</small></div>
-      <div class="card-btn" onclick="selectCard(this,'מקס שיר (0526)')">מקס שיר<br><small>0526</small></div>
-      <div class="card-btn" onclick="selectCard(this,'ביחד בשבילך (6610)')">ביחד<br><small>6610</small></div>
-      <div class="card-btn" onclick="selectCard(this,'עו&quot;ש')">עו"ש<br><small>בנק</small></div>
+      <div class="card-btn active" onclick="selectCard(this,'פייבוקס אור (2519)')">פייבוקס אור<small>2519</small></div>
+      <div class="card-btn" onclick="selectCard(this,'כאל פרו (4160)')">כאל פרו<small>4160</small></div>
+      <div class="card-btn" onclick="selectCard(this,'פייבוקס שיר (7838)')">פייבוקס שיר<small>7838</small></div>
+      <div class="card-btn" onclick="selectCard(this,'פרו שיר (5072)')">פרו שיר<small>5072</small></div>
+      <div class="card-btn" onclick="selectCard(this,'מקס שיר (0526)')">מקס שיר<small>0526</small></div>
+      <div class="card-btn" onclick="selectCard(this,'ביחד בשבילך (6610)')">ביחד<small>6610</small></div>
+      <div class="card-btn" onclick="selectCard(this,'עו&quot;ש')">עו"ש<small>בנק</small></div>
     </div>
     <div class="summary-cards">
       <div class="card"><div class="card-label">סה"כ החודש</div><div class="card-value" id="card-total">₪0</div></div>
@@ -126,105 +158,184 @@ tr:hover td { background: #1e2235; }
     </div>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>תאריך</th><th>קטגוריה</th><th>סכום</th><th>בית עסק</th><th>הערות</th></tr></thead>
-        <tbody id="card-table"><tr><td colspan="5" class="empty-state">בחר כרטיס</td></tr></tbody>
+        <thead><tr><th>תאריך</th><th>קטגוריה</th><th>סכום</th><th>בית עסק</th><th>הערות</th><th></th></tr></thead>
+        <tbody id="card-table"><tr><td colspan="6" class="empty-state">בחר כרטיס</td></tr></tbody>
       </table>
     </div>
   </div>
 </div>
 
+<div class="edit-modal" id="edit-modal">
+  <div class="edit-box">
+    <h3>עריכת הוצאה</h3>
+    <div class="form-grid">
+      <div class="form-field"><label>תאריך</label><input type="date" id="e-date"></div>
+      <div class="form-field"><label>כרטיס</label>
+        <select id="e-card">
+          <option>פייבוקס אור (2519)</option><option>כאל פרו (4160)</option>
+          <option>פייבוקס שיר (7838)</option><option>פרו שיר (5072)</option>
+          <option>מקס שיר (0526)</option><option>ביחד בשבילך (6610)</option><option>עו"ש</option>
+        </select>
+      </div>
+      <div class="form-field"><label>סכום (₪)</label><input type="number" id="e-amount"></div>
+      <div class="form-field"><label>קטגוריה</label>
+        <select id="e-cat">
+          <option>קבוע</option><option>תשלומים</option><option>קניות</option>
+          <option>דלק</option><option>שיר</option><option>אור</option>
+          <option>ילדים</option><option>אוכל בחוץ</option><option>אחר</option>
+        </select>
+      </div>
+      <div class="form-field"><label>בית עסק</label><input type="text" id="e-biz"></div>
+      <div class="form-field"><label>הערות</label><input type="text" id="e-note"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn" onclick="saveEdit()">שמור שינויים</button>
+      <button class="btn btn-cancel" onclick="closeEdit()">ביטול</button>
+    </div>
+  </div>
+</div>
+
 <script>
+const SUPABASE_URL = 'https://mdfnwskutcmbapwemyih.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_fWDgSSCjxUci0EzqFvD3yw_-IlIgNTS4';
+
 const BUDGETS = { קניות:2500, דלק:500, שיר:800, אור:400, ילדים:400, 'אוכל בחוץ':400 };
 const ALL_CATS = ['קבוע','תשלומים','קניות','דלק','שיר','אור','ילדים','אוכל בחוץ','אחר'];
 const CAT_COLORS = { קבוע:'#4f6ef7', תשלומים:'#a78bfa', קניות:'#34d399', דלק:'#fbbf24', שיר:'#f472b6', אור:'#fb923c', ילדים:'#60a5fa', 'אוכל בחוץ':'#f87171', אחר:'#9ca3af' };
+const NO_BUDGET_CATS = ['קבוע','תשלומים','אחר'];
 
-let entries = [
-  {date:'14/04', card:'עו"ש', cat:'קבוע', amount:200, biz:'ועד בית', note:''},
-  {date:'19/04', card:'עו"ש', cat:'קבוע', amount:-392, biz:'קצבת ילדים', note:'הכנסה'},
-  {date:'20/04', card:'עו"ש', cat:'קבוע', amount:1000, biz:'החזר הלקסוס', note:'אלטשולר - עד 04/29'},
-  {date:'20/04', card:'עו"ש', cat:'קבוע', amount:300, biz:'קופת גמל ילדים', note:'אלטשולר'},
-  {date:'22/04', card:'עו"ש', cat:'קבוע', amount:552, biz:'החזר הלוואה', note:'תשלום 5/60'},
-  {date:'26/04', card:'עו"ש', cat:'קבוע', amount:5400, biz:'שכר דירה', note:''},
-  {date:'01/05', card:'עו"ש', cat:'קבוע', amount:30, biz:'עמלות בנק', note:''},
-  {date:'12/04', card:'פייבוקס אור (2519)', cat:'קבוע', amount:67, biz:'מיסי חינוך', note:''},
-  {date:'13/04', card:'פייבוקס אור (2519)', cat:'קניות', amount:28, biz:'אביאל', note:''},
-  {date:'16/04', card:'פייבוקס אור (2519)', cat:'אחר', amount:643, biz:'פרפקט אופנועים', note:'טיפול הרצה'},
-  {date:'17/04', card:'פייבוקס אור (2519)', cat:'קניות', amount:9, biz:'אלברט מרקט', note:''},
-  {date:'20/04', card:'פייבוקס אור (2519)', cat:'קבוע', amount:24, biz:'יוטיוב פרימיום', note:''},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'תשלומים', amount:361, biz:"דאבל פאנץ'", note:'אימונים ליאו - 7/9'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'תשלומים', amount:354, biz:'פנדה', note:'תשלום 5/12'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'תשלומים', amount:256, biz:'ביטוח ישיר', note:'אופנוע - 3/11'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'תשלומים', amount:232, biz:'ביטוח חובה', note:'12/12'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'תשלומים', amount:205, biz:"טאץ' איט", note:'מכונת קפה - 6/10'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'תשלומים', amount:184, biz:'משרד התחבורה', note:'טסט - 11/11'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'תשלומים', amount:53, biz:'החברה העירונית', note:'כינור - 7/10'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'אחר', amount:306, biz:'ביטוח ישיר', note:'אופנוע - רועי 3/3'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'תשלומים', amount:147, biz:'KSP', note:'מדפסת 1/2'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'אור', amount:55, biz:'אוכל', note:''},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'דלק', amount:75, biz:'סונול', note:'אופנוע'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'אור', amount:29, biz:'דואר', note:'עבודת גמר'},
-  {date:'10/04', card:'כאל פרו (4160)', cat:'קניות', amount:70, biz:'שופרסל', note:''},
-  {date:'13/04', card:'כאל פרו (4160)', cat:'קניות', amount:69, biz:'דני', note:''},
-  {date:'15/04', card:'כאל פרו (4160)', cat:'ילדים', amount:30, biz:'נקניקיה', note:''},
-  {date:'16/04', card:'כאל פרו (4160)', cat:'קניות', amount:250, biz:'יוחננוף', note:''},
-  {date:'16/04', card:'כאל פרו (4160)', cat:'אור', amount:60, biz:'פייבוקס', note:'ספר'},
-  {date:'16/04', card:'כאל פרו (4160)', cat:'קניות', amount:582, biz:'קארפור', note:''},
-  {date:'17/04', card:'כאל פרו (4160)', cat:'קבוע', amount:150, biz:'אימונים אור', note:''},
-  {date:'17/04', card:'כאל פרו (4160)', cat:'קניות', amount:189, biz:'שופרסל', note:''},
-  {date:'17/04', card:'כאל פרו (4160)', cat:'קניות', amount:48, biz:'דני', note:''},
-  {date:'19/04', card:'כאל פרו (4160)', cat:'אחר', amount:269, biz:'החברה העירונית', note:''},
-  {date:'19/04', card:'כאל פרו (4160)', cat:'אחר', amount:175, biz:'החברה העירונית', note:''},
-  {date:'19/04', card:'כאל פרו (4160)', cat:'קניות', amount:118, biz:'יוחננוף', note:''},
-  {date:'19/04', card:'כאל פרו (4160)', cat:'ילדים', amount:146, biz:'מקס סטוק', note:''},
-  {date:'19/04', card:'כאל פרו (4160)', cat:'דלק', amount:70, biz:'דלק', note:''},
-  {date:'20/04', card:'כאל פרו (4160)', cat:'קבוע', amount:214, biz:'כללית', note:'פלטינום'},
-  {date:'20/04', card:'כאל פרו (4160)', cat:'קבוע', amount:81, biz:'כללית סיעוד', note:''},
-  {date:'21/04', card:'כאל פרו (4160)', cat:'קבוע', amount:75, biz:'הוט מובייל', note:''},
-  {date:'21/04', card:'כאל פרו (4160)', cat:'קניות', amount:148, biz:'וולט', note:''},
-  {date:'10/04', card:'פרו שיר (5072)', cat:'שיר', amount:9, biz:'רולדין', note:''},
-  {date:'10/04', card:'פרו שיר (5072)', cat:'קניות', amount:38, biz:'דני', note:''},
-  {date:'11/04', card:'פרו שיר (5072)', cat:'אוכל בחוץ', amount:25, biz:'ללוש', note:''},
-  {date:'11/04', card:'פרו שיר (5072)', cat:'ילדים', amount:85, biz:'אורבניקה', note:''},
-  {date:'12/04', card:'פרו שיר (5072)', cat:'שיר', amount:10, biz:'פרח נוחות', note:''},
-  {date:'14/04', card:'פרו שיר (5072)', cat:'אחר', amount:34, biz:'כללית', note:''},
-  {date:'15/04', card:'פרו שיר (5072)', cat:'קניות', amount:9, biz:'אלברט מרקט', note:''},
-  {date:'17/04', card:'פרו שיר (5072)', cat:'שיר', amount:130, biz:"ניני האצ'י", note:''},
-  {date:'17/04', card:'פרו שיר (5072)', cat:'שיר', amount:14, biz:'אמפמ', note:''},
-  {date:'17/04', card:'פרו שיר (5072)', cat:'קניות', amount:42, biz:'דרך המשי', note:''},
-  {date:'19/04', card:'פרו שיר (5072)', cat:'קניות', amount:10, biz:'סופר פארם', note:''},
-  {date:'21/04', card:'פרו שיר (5072)', cat:'אחר', amount:200, biz:'ביט', note:'דיקור'},
-  {date:'21/04', card:'פרו שיר (5072)', cat:'אוכל בחוץ', amount:15, biz:'בזיליקום', note:''},
-  {date:'23/04', card:'פרו שיר (5072)', cat:'אחר', amount:44, biz:'כללית', note:''},
-  {date:'10/04', card:'מקס שיר (0526)', cat:'קניות', amount:23, biz:'אביאל', note:''},
-  {date:'11/04', card:'מקס שיר (0526)', cat:'שיר', amount:6, biz:'יאנגה', note:''},
-  {date:'12/04', card:'מקס שיר (0526)', cat:'שיר', amount:135, biz:"רוטצ'", note:''},
-  {date:'17/04', card:'מקס שיר (0526)', cat:'קניות', amount:40, biz:'ירקות', note:''},
-  {date:'19/04', card:'מקס שיר (0526)', cat:'קניות', amount:9, biz:'ירקות', note:''},
-  {date:'19/04', card:'מקס שיר (0526)', cat:'ילדים', amount:10, biz:'עיריית ראשון', note:'עצמאות'},
-  {date:'20/04', card:'מקס שיר (0526)', cat:'שיר', amount:5, biz:'רולדין', note:''},
-  {date:'15/04', card:'ביחד בשבילך (6610)', cat:'אוכל בחוץ', amount:74, biz:'משלוחה', note:''},
-  {date:'22/04', card:'ביחד בשבילך (6610)', cat:'ילדים', amount:150, biz:'ביחד בשבילך', note:'טרמינל איקס'},
-];
-
+let entries = [];
 let currentCard = 'פייבוקס אור (2519)';
+let editingId = null;
+
 document.getElementById('f-date').value = new Date().toISOString().split('T')[0];
 
-function addEntry() {
-  const date = document.getElementById('f-date').value;
+async function api(method, path, body) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    method,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : ''
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (!res.ok) throw new Error(await res.text());
+  if (method === 'DELETE' || method === 'PATCH') return;
+  return res.json();
+}
+
+async function loadEntries() {
+  try {
+    entries = await api('GET', 'expenses?order=date.desc');
+    document.getElementById('status-text').textContent = 'מחובר — הנתונים נשמרים אוטומטית';
+    buildCats();
+    calcTotal();
+    selectCard(null, currentCard);
+  } catch(e) {
+    document.getElementById('status-text').textContent = 'שגיאת התחברות';
+    showStatus('שגיאה בטעינת נתונים: ' + e.message, 'error');
+  }
+}
+
+function showStatus(msg, type) {
+  const bar = document.getElementById('status-bar');
+  bar.textContent = msg;
+  bar.className = 'status-bar ' + (type||'');
+  bar.style.display = 'block';
+  setTimeout(() => bar.style.display = 'none', 3000);
+}
+
+async function addEntry() {
+  const dateVal = document.getElementById('f-date').value;
   const card = document.getElementById('f-card').value;
   const amount = parseFloat(document.getElementById('f-amount').value);
   const cat = document.getElementById('f-cat').value;
   const biz = document.getElementById('f-biz').value;
   const note = document.getElementById('f-note').value;
-  if (!date || !amount || !biz) { alert('נא למלא תאריך, סכום ובית עסק'); return; }
-  const d = new Date(date);
-  const fdate = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0');
-  entries.unshift({ date:fdate, card, cat, amount, biz, note });
-  document.getElementById('f-amount').value = '';
-  document.getElementById('f-biz').value = '';
-  document.getElementById('f-note').value = '';
-  buildCats(); calcTotal(); selectCard(null, currentCard);
-  switchTab('summary');
+  if (!dateVal || !amount || !biz) { showStatus('נא למלא תאריך, סכום ובית עסק', 'error'); return; }
+  const d = new Date(dateVal);
+  const date = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0');
+  try {
+    const res = await api('POST', 'expenses', { date, card, cat, amount, biz, note });
+    entries.unshift(res[0]);
+    document.getElementById('f-amount').value = '';
+    document.getElementById('f-biz').value = '';
+    document.getElementById('f-note').value = '';
+    buildCats(); calcTotal(); selectCard(null, currentCard);
+    showStatus('ההוצאה נשמרה בהצלחה', 'success');
+    switchTab('summary');
+  } catch(e) {
+    showStatus('שגיאה בשמירה: ' + e.message, 'error');
+  }
+}
+
+function openEdit(id) {
+  const e = entries.find(x => x.id === id);
+  if (!e) return;
+  editingId = id;
+  document.getElementById('e-date').value = e.date ? '2025-' + e.date.split('/').reverse().join('-') : '';
+  document.getElementById('e-card').value = e.card;
+  document.getElementById('e-amount').value = e.amount;
+  document.getElementById('e-cat').value = e.cat;
+  document.getElementById('e-biz').value = e.biz;
+  document.getElementById('e-note').value = e.note || '';
+  document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEdit() {
+  document.getElementById('edit-modal').classList.remove('open');
+  editingId = null;
+}
+
+async function saveEdit() {
+  const dateVal = document.getElementById('e-date').value;
+  const d = new Date(dateVal);
+  const date = String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0');
+  const updates = {
+    date,
+    card: document.getElementById('e-card').value,
+    amount: parseFloat(document.getElementById('e-amount').value),
+    cat: document.getElementById('e-cat').value,
+    biz: document.getElementById('e-biz').value,
+    note: document.getElementById('e-note').value
+  };
+  try {
+    await api('PATCH', 'expenses?id=eq.' + editingId, updates);
+    const idx = entries.findIndex(x => x.id === editingId);
+    if (idx >= 0) entries[idx] = { ...entries[idx], ...updates };
+    closeEdit();
+    buildCats(); calcTotal(); selectCard(null, currentCard);
+    showStatus('ההוצאה עודכנה בהצלחה', 'success');
+  } catch(e) {
+    showStatus('שגיאה בעדכון: ' + e.message, 'error');
+  }
+}
+
+async function deleteEntry(id) {
+  if (!confirm('למחוק את ההוצאה?')) return;
+  try {
+    await api('DELETE', 'expenses?id=eq.' + id);
+    entries = entries.filter(x => x.id !== id);
+    buildCats(); calcTotal(); selectCard(null, currentCard);
+    showStatus('ההוצאה נמחקה', 'success');
+  } catch(e) {
+    showStatus('שגיאה במחיקה: ' + e.message, 'error');
+  }
+}
+
+async function confirmNewMonth() {
+  if (!confirm('למחוק את כל ההוצאות המשתנות (קניות, דלק, שיר, אור, ילדים, אוכל בחוץ, אחר)?')) return;
+  const toDelete = entries.filter(e => !['קבוע','תשלומים'].includes(e.cat));
+  try {
+    await api('DELETE', "expenses?cat=not.in.(קבוע,תשלומים)");
+    entries = entries.filter(e => ['קבוע','תשלומים'].includes(e.cat));
+    buildCats(); calcTotal(); selectCard(null, currentCard);
+    showStatus('חודש חדש — הוצאות משתנות נמחקו', 'success');
+  } catch(e) {
+    showStatus('שגיאה: ' + e.message, 'error');
+  }
 }
 
 function calcTotal() {
@@ -237,10 +348,10 @@ function calcTotal() {
   else if (raw > 0) { hint.textContent='עודף ₪'+raw.toLocaleString(); hint.style.color='#34d399'; subEl.textContent='בניכוי עודף פתיחה'; subEl.style.color='#34d399'; }
   else { hint.textContent='ללא יתרה'; hint.style.color='#6b7280'; subEl.textContent=''; }
   const total = entries.reduce((s,e)=>s+e.amount,0) - raw;
-  totalEl.textContent = '₪' + total.toLocaleString();
+  totalEl.textContent = '₪' + Math.round(total).toLocaleString();
   const budgeted = entries.filter(e=>BUDGETS[e.cat]).reduce((s,e)=>s+e.amount,0);
   const remain = 4500 - budgeted;
-  remainEl.textContent = remain>=0 ? 'נשאר ₪'+remain.toLocaleString() : 'חריגה ₪'+Math.abs(remain).toLocaleString();
+  remainEl.textContent = remain>=0 ? 'נשאר ₪'+Math.round(remain).toLocaleString() : 'חריגה ₪'+Math.round(Math.abs(remain)).toLocaleString();
   remainEl.style.color = remain>=0 ? '#34d399' : '#f87171';
 }
 
@@ -261,23 +372,30 @@ function buildCats() {
       const remaining = budget - actual;
       const bc = pct>=90?'#f87171':pct>=70?'#fbbf24':'#34d399';
       progressHTML = `<div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${bc};"></div></div>`;
-      remainHTML = `<div style="font-size:12px;color:${remaining>=0?'#34d399':'#f87171'};">${remaining>=0?'נשאר':'חריגה'} ₪${Math.abs(remaining).toLocaleString()}</div>`;
+      remainHTML = `<div style="font-size:12px;color:${remaining>=0?'#34d399':'#f87171'};">${remaining>=0?'נשאר':'חריגה'} ₪${Math.round(Math.abs(remaining)).toLocaleString()}</div>`;
     }
     div.innerHTML = `
       <div class="cat-top">
         <div class="cat-name"><span class="dot" style="background:${color};box-shadow:0 0 6px ${color}44;"></span>${catName}</div>
-        <div class="cat-amounts">${hasBudget?`₪${actual.toLocaleString()} <span>/ ₪${budget.toLocaleString()}</span>`:`₪${actual.toLocaleString()}`}</div>
+        <div class="cat-amounts">${hasBudget?`₪${Math.round(actual).toLocaleString()} <span>/ ₪${budget.toLocaleString()}</span>`:`₪${Math.round(actual).toLocaleString()}`}</div>
       </div>${progressHTML}${remainHTML}`;
     const detail = document.createElement('div');
     detail.className = 'cat-detail';
     detail.id = 'det-'+i;
     if (catEntries.length===0) {
-      detail.innerHTML = '<div style="padding:12px 14px;font-size:13px;color:#4b5563;">אין עסקאות</div>';
+      detail.innerHTML = '<div style="padding:12px 14px;font-size:14px;color:#4b5563;">אין עסקאות</div>';
     } else {
-      const rows = catEntries.map(t=>`<tr><td>${t.date}</td><td style="color:${color};">${catName}</td><td>${t.amount<0?'<span style="color:#34d399;">':''}₪${t.amount.toLocaleString()}${t.amount<0?'</span>':''}</td><td>${t.biz}</td><td style="color:#4b5563;">${t.note||'—'}</td></tr>`).join('');
-      detail.innerHTML = `<table><thead><tr><th>תאריך</th><th>קטגוריה</th><th>סכום</th><th>בית עסק</th><th>הערות</th></tr></thead><tbody>${rows}</tbody></table>`;
+      const rows = catEntries.map(t=>`<tr>
+        <td>${t.date}</td>
+        <td style="color:${color};">${catName}</td>
+        <td style="font-size:14px;">${t.amount<0?'<span style="color:#34d399;">':''} ₪${Math.round(t.amount).toLocaleString()}${t.amount<0?'</span>':''}</td>
+        <td style="font-size:14px;">${t.biz}</td>
+        <td style="color:#4b5563;font-size:14px;">${t.note||'—'}</td>
+        <td><button class="action-btn" onclick="openEdit(${t.id})">✏️</button><button class="action-btn del" onclick="deleteEntry(${t.id})">🗑️</button></td>
+      </tr>`).join('');
+      detail.innerHTML = `<table><thead><tr><th>תאריך</th><th>קטגוריה</th><th>סכום</th><th>בית עסק</th><th>הערות</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
     }
-    div.onclick = () => { const d=document.getElementById('det-'+i); d.style.display=d.style.display==='block'?'none':'block'; };
+    div.onclick = (e) => { if(e.target.closest('button')) return; const d=document.getElementById('det-'+i); d.style.display=d.style.display==='block'?'none':'block'; };
     list.appendChild(div); list.appendChild(detail);
   });
 }
@@ -294,13 +412,22 @@ function selectCard(el, name) {
   currentCard = name;
   const cardEntries = entries.filter(e=>e.card===name);
   const total = cardEntries.reduce((s,e)=>s+e.amount,0);
-  document.getElementById('card-total').textContent = '₪'+total.toLocaleString();
+  document.getElementById('card-total').textContent = '₪'+Math.round(total).toLocaleString();
   document.getElementById('card-count').textContent = cardEntries.length;
   const tbody = document.getElementById('card-table');
   tbody.innerHTML = cardEntries.length===0
-    ? '<tr><td colspan="5" class="empty-state">אין עסקאות</td></tr>'
-    : cardEntries.map(r=>`<tr><td>${r.date}</td><td style="color:${CAT_COLORS[r.cat]};">${r.cat}</td><td>${r.amount<0?'<span style="color:#34d399;">':''}₪${r.amount.toLocaleString()}${r.amount<0?'</span>':''}</td><td>${r.biz}</td><td style="color:#4b5563;">${r.note||'—'}</td></tr>`).join('');
+    ? '<tr><td colspan="6" class="empty-state">אין עסקאות</td></tr>'
+    : cardEntries.map(r=>`<tr>
+        <td>${r.date}</td>
+        <td style="color:${CAT_COLORS[r.cat]};">${r.cat}</td>
+        <td>${r.amount<0?'<span style="color:#34d399;">':''}₪${Math.round(r.amount).toLocaleString()}${r.amount<0?'</span>':''}</td>
+        <td style="font-size:14px;">${r.biz}</td>
+        <td style="color:#4b5563;font-size:14px;">${r.note||'—'}</td>
+        <td><button class="action-btn" onclick="openEdit(${r.id})">✏️</button><button class="action-btn del" onclick="deleteEntry(${r.id})">🗑️</button></td>
+      </tr>`).join('');
 }
 
-buildCats(); calcTotal(); selectCard(null, currentCard);
+loadEntries();
 </script>
+</body>
+</html>
