@@ -618,16 +618,15 @@ function selectCard(prefix, el, name) {
   const period = prefix==='m' ? getCurrentPeriod() : periodFromKey(historyMonthKey);
   const me = entries.filter(e=>isInPeriod(e.date,period));
   const ce = me.filter(e=>e.card===name);
-  // חיוב בפועל = משתנות + קבוע/תשלומים שסומנו
-  const actualTotal = ce.filter(e=>!FIXED_CATS.includes(e.cat)||e.paid).reduce((s,e)=>s+e.amount,0);
+  // חיוב בפועל = בדיוק מה שמוצג בטבלה (משתנות + קבוע/תשלומים שסומנו)
+  const ceVisible = ce.filter(e => !FIXED_CATS.includes(e.cat) || e.paid);
+  const actualTotal = ceVisible.reduce((s,e)=>s+e.amount,0);
   // חיוב צפוי = הכל
   const expectedTotal = ce.reduce((s,e)=>s+e.amount,0);
   document.getElementById(`${prefix}-card-total`).textContent='₪'+Math.round(actualTotal).toLocaleString();
   const expectedEl = document.getElementById(`${prefix}-card-expected`);
   if (expectedEl) expectedEl.textContent='₪'+Math.round(expectedTotal).toLocaleString();
-  document.getElementById(`${prefix}-card-count`).textContent=ce.length;
-  // בטבלה מציג רק מה שירד בפועל
-  const ceVisible = ce.filter(e => !FIXED_CATS.includes(e.cat) || e.paid);
+  document.getElementById(`${prefix}-card-count`).textContent=ceVisible.length;
   const tbody=document.getElementById(`${prefix}-card-table`);
   tbody.innerHTML=ceVisible.length===0?`<tr><td colspan="6" class="empty-state">אין עסקאות</td></tr>`:ceVisible.map(r=>`<tr>
     <td>${r.date}</td><td style="color:${CAT_COLORS[r.cat]};">${r.cat}</td>
